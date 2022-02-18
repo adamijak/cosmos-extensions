@@ -9,6 +9,7 @@
     <Authors>adamijak</Authors>
     <PackageTags>Cosmos Extensions;Microsoft;Azure;Cosmos;Extensions;Database</PackageTags>
     <Description>Extensions for Cosmos database.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
