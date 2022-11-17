@@ -4,7 +4,7 @@ using Microsoft.Azure.Cosmos;
 namespace Greycorbel.T2T.Common.Extensions;
 public static class FeedIteratorExtensions
 {
-    public static async Task ForEach<T>(this FeedIterator<T> iterator, Func<T, Task> func, CancellationToken cancelToken = default)
+    public static async Task ForEachAsync<T>(this FeedIterator<T> iterator, Func<T, Task> func, CancellationToken cancelToken = default)
     {
         while (iterator.HasMoreResults)
         {
@@ -22,7 +22,7 @@ public static class FeedIteratorExtensions
         }
     }
 
-    public static async Task ForEach<T>(this FeedIterator<T> iterator, Action<T> func, CancellationToken cancelToken = default)
+    public static async Task ForEachAsync<T>(this FeedIterator<T> iterator, Action<T> func, CancellationToken cancelToken = default)
     {
         while (iterator.HasMoreResults)
         {
@@ -40,7 +40,7 @@ public static class FeedIteratorExtensions
         }
     }
 
-    public static async Task ChunkedForEach<T>(this FeedIterator<T> iterator, Func<T, Task> func, int chunkSize = 5, CancellationToken cancelToken = default)
+    public static async Task ChunkedForEachAsync<T>(this FeedIterator<T> iterator, Func<T, Task> func, int chunkSize = 5, CancellationToken cancelToken = default)
     {
         while (iterator.HasMoreResults)
         {
@@ -65,7 +65,7 @@ public static class FeedIteratorExtensions
         }
     }
 
-    public static async Task QueuedForEach<T>(this FeedIterator<T> iterator, Func<T, Task> func, int maxTaskCount = 5, CancellationToken cancelToken = default)
+    public static async Task QueuedForEachAsync<T>(this FeedIterator<T> iterator, Func<T, Task> func, int maxTaskCount = 5, CancellationToken cancelToken = default)
     {
         while (iterator.HasMoreResults)
         {
@@ -76,13 +76,13 @@ public static class FeedIteratorExtensions
             var tasks = new List<Task>();
             for (var i = 0; i < maxTaskCount; i++)
             {
-                tasks.Add(QueuedForEachTask(queue, func, cancelToken));
+                tasks.Add(QueuedForEachTaskAsync(queue, func, cancelToken));
             }
             await Task.WhenAll(tasks);
         }
     }
 
-    private static async Task QueuedForEachTask<T>(ConcurrentQueue<T> queue, Func<T, Task> func, CancellationToken cancelToken = default)
+    private static async Task QueuedForEachTaskAsync<T>(ConcurrentQueue<T> queue, Func<T, Task> func, CancellationToken cancelToken = default)
     {
         while (!queue.IsEmpty)
         {
@@ -97,7 +97,7 @@ public static class FeedIteratorExtensions
         }
     }
 
-    public static async Task<T[]> GetAll<T>(this FeedIterator<T> iterator, CancellationToken cancelToken = default)
+    public static async Task<T[]> ReadAllAsync<T>(this FeedIterator<T> iterator, CancellationToken cancelToken = default)
     {
         var allValues = new List<T>();
         while (iterator.HasMoreResults)
