@@ -17,6 +17,9 @@ jobs:
         run: dotnet pack -c Release
       - name: Publish the package to nuget.orkg
         run: |
+          echo ${{ github.ref_name }}
+          echo $GITHUB_REF_NAME
+          echo ${{env.GITHUB_REF_NAME}}
           echo ${{GITHUB_REF}}
           github_ref=${{env.GITHUB_REF}}
           version="${github_ref:1}"
