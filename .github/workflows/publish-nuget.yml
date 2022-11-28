@@ -17,9 +17,8 @@ jobs:
         run: dotnet pack -c Release
       - name: Publish the package to nuget.orkg
         run: |
-          echo ${{ github.ref_name }}
-          echo $GITHUB_REF_NAME
-          echo ${{env.GITHUB_REF_NAME}}
-          version="${github_ref:1}"
+          
+          tag=$GITHUB_REF_NAME
+          version="${$tag:1}"
           echo $version
           dotnet nuget push ./bin/Release/*$version.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
