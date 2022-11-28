@@ -19,4 +19,4 @@ jobs:
         run: |
           tag=${{ github.ref_name }}
           version="${tag:1}"
-          dotnet nuget push ./bin/Release/*$version.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
+          dotnet nuget push -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json ./bin/Release/*$version.nupkg
