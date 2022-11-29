@@ -1,0 +1,24 @@
+name: Publish Nuget package
+on:
+  release:
+    types: [published]
+    
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    env:
+      NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+      - name: Create the package
+        run: dotnet pack -c Release
+      - name: Publish the package to nuget.orkg
+        run: |
+          tag=${{ github.ref_name }}
+          version="${tag:1}"
+          echo ./bin/Release/*$version.nupkg
+          echo $NUGET_AUTH_TOKEN
+          dotnet nuget push ./bin/Release/*$version.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
