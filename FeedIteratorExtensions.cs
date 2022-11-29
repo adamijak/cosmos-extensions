@@ -4,6 +4,24 @@ using Microsoft.Azure.Cosmos;
 namespace Greycorbel.T2T.Common.Extensions;
 public static class FeedIteratorExtensions
 {
+    public static async Task ForEach<T>(this FeedIterator<T> iterator, Action<T> func, CancellationToken cancelToken = default)
+    {
+        while (iterator.HasMoreResults)
+        {
+            var values = await iterator.ReadNextAsync(cancelToken);
+
+            foreach (var value in values)
+            {
+                if (cancelToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                func(value);
+            }
+        }
+    }
+
     public static async Task ForEachAsync<T>(this FeedIterator<T> iterator, Func<T, Task> func, CancellationToken cancelToken = default)
     {
         while (iterator.HasMoreResults)
@@ -18,24 +36,6 @@ public static class FeedIteratorExtensions
                 }
 
                 await func(value);
-            }
-        }
-    }
-
-    public static async Task ForEachAsync<T>(this FeedIterator<T> iterator, Action<T> func, CancellationToken cancelToken = default)
-    {
-        while (iterator.HasMoreResults)
-        {
-            var values = await iterator.ReadNextAsync(cancelToken);
-
-            foreach (var value in values)
-            {
-                if (cancelToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                func(value);
             }
         }
     }
