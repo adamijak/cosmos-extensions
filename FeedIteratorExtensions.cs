@@ -40,6 +40,38 @@ public static class FeedIteratorExtensions
         }
     }
 
+    public static async Task ForEachAsync<T>(this FeedIterator<T> iterator, Func<T, Task> func, int maxWorkerCount = 5, CancellationToken cancelToken = default)
+    {
+        while (iterator.HasMoreResults)
+        {
+            var values = await iterator.ReadNextAsync(cancelToken);
+
+            var queue = new ConcurrentQueue<T>(values);
+
+            var tasks = new List<Task>();
+            foreach (var i in Enumerable.Range(0, Math.Min(values.Count, maxWorkerCount)))
+            {
+                tasks.Add(ForEachTaskAsync(queue, func, cancelToken));
+            }
+            await Task.WhenAll(tasks);
+        }
+    }
+
+    private static async Task ForEachTaskAsync<T>(ConcurrentQueue<T> queue, Func<T, Task> func, CancellationToken cancelToken = default)
+    {
+        while (!queue.IsEmpty)
+        {
+            if (cancelToken.IsCancellationRequested)
+            {
+                return;
+            }
+            if (queue.TryDequeue(out var value))
+            {
+                await func(value);
+            }
+        }
+    }
+
     public static async Task ChunkedForEachAsync<T>(this FeedIterator<T> iterator, Func<T, Task> func, int chunkSize = 5, CancellationToken cancelToken = default)
     {
         while (iterator.HasMoreResults)
@@ -61,38 +93,6 @@ public static class FeedIteratorExtensions
                 }
                 await Task.WhenAll(tasks);
 
-            }
-        }
-    }
-
-    public static async Task QueuedForEachAsync<T>(this FeedIterator<T> iterator, Func<T, Task> func, int maxTaskCount = 5, CancellationToken cancelToken = default)
-    {
-        while (iterator.HasMoreResults)
-        {
-            var values = await iterator.ReadNextAsync(cancelToken);
-
-            var queue = new ConcurrentQueue<T>(values);
-
-            var tasks = new List<Task>();
-            for (var i = 0; i < maxTaskCount; i++)
-            {
-                tasks.Add(QueuedForEachTaskAsync(queue, func, cancelToken));
-            }
-            await Task.WhenAll(tasks);
-        }
-    }
-
-    private static async Task QueuedForEachTaskAsync<T>(ConcurrentQueue<T> queue, Func<T, Task> func, CancellationToken cancelToken = default)
-    {
-        while (!queue.IsEmpty)
-        {
-            if (cancelToken.IsCancellationRequested)
-            {
-                return;
-            }
-            if (queue.TryDequeue(out var value))
-            {
-                await func(value);
             }
         }
     }
