@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Azure.Cosmos;
 
-namespace Greycorbel.T2T.Common.Extensions;
+namespace Adamijak.Azure.Cosmos.Extensions;
 public static class FeedIteratorExtensions
 {
     public static async Task ForEach<T>(this FeedIterator<T> iterator, Action<T> func, CancellationToken cancelToken = default)
