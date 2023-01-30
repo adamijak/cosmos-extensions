@@ -108,6 +108,5 @@ public static class FeedIteratorExtensions
                 yield return value;
             }
         }
-        
     }
 }
