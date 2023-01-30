@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Microsoft.Azure.Cosmos;
 
 namespace Adamijak.Azure.Cosmos.Extensions;
@@ -97,14 +98,16 @@ public static class FeedIteratorExtensions
         }
     }
 
-    public static async Task<T[]> ReadAllAsync<T>(this FeedIterator<T> iterator, CancellationToken cancelToken = default)
+    public static async IAsyncEnumerable<T> ReadAllAsync<T>(this FeedIterator<T> iterator, [EnumeratorCancellation] CancellationToken cancelToken = default)
     {
-        var allValues = new List<T>();
         while (iterator.HasMoreResults)
         {
             var values = await iterator.ReadNextAsync(cancelToken);
-            allValues.AddRange(values);
+            foreach(var value in values)
+            {
+                yield return value;
+            }
         }
-        return allValues.ToArray();
+        
     }
 }
