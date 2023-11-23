@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Adamijak.Azure.Cosmos.Extensions</PackageId>
-    <Version>0.4.1</Version>
+    <Version>0.4.2</Version>
     <Authors>adamijak</Authors>
     <PackageTags>Cosmos Extensions;Microsoft;Azure;Cosmos;Extensions;Database</PackageTags>
     <Description>Extensions for Cosmos database.</Description>
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.31.2" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.37.0" />
   </ItemGroup>
 
 </Project>
