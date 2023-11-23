@@ -97,7 +97,20 @@ public static class FeedIteratorExtensions
             }
         }
     }
-
+    
+    public static async IAsyncEnumerable<T> ToAsyncEnumerable<T>(this FeedIterator<T> iterator, [EnumeratorCancellation] CancellationToken cancelToken = default)
+    {
+        while (iterator.HasMoreResults)
+        {
+            var values = await iterator.ReadNextAsync(cancelToken);
+            foreach(var value in values)
+            {
+                yield return value;
+            }
+        }
+    }
+    
+    [Obsolete("ReadAllAsync is deprecated, please use ToAsyncEnumerable instead.")]
     public static async IAsyncEnumerable<T> ReadAllAsync<T>(this FeedIterator<T> iterator, [EnumeratorCancellation] CancellationToken cancelToken = default)
     {
         while (iterator.HasMoreResults)
